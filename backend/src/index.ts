@@ -15,16 +15,19 @@ const PORT = process.env.PORT || 5000;
 // Security Middlewares
 app.use(helmet());
 app.use(cookieParser());
+// Enable CORS for all requests, methods, and origins
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl) or reflect the requesting origin
-      if (!origin) return callback(null, true);
-      return callback(null, true);
-    },
+    origin: true, // Reflect request origin to allow any frontend domain while supporting credentials
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"],
+    optionsSuccessStatus: 200,
   })
 );
+
+// Explicitly handle preflight OPTIONS requests for all endpoints
+app.options("*", cors() as any);
 
 // Rate Limiter
 const limiter = rateLimit({
