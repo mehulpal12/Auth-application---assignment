@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { api, setAccessToken } from "@/lib/api";
 
 export interface User {
@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const pathname = usePathname();
 
   // On mount, perform a silent refresh to check if we have a valid session
   useEffect(() => {
@@ -44,7 +43,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(null);
         
         // Only redirect to login if we are trying to access a protected area (like /dashboard)
-        if (!pathname.startsWith("/login") && !pathname.startsWith("/signup") && pathname !== "/") {
+        if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login") && !window.location.pathname.startsWith("/signup") && window.location.pathname !== "/") {
           router.push("/login");
         }
       } finally {
@@ -53,7 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     initAuth();
-  }, [pathname, router]);
+  }, []);
 
   const login = async (email: string, pass: string) => {
     const res = await api.post("/auth/login", { email, password: pass });
