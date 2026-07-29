@@ -26,8 +26,7 @@ app.use(
   })
 );
 
-// Explicitly handle preflight OPTIONS requests for all endpoints
-app.options("*", cors() as any);
+
 
 // Rate Limiter
 const limiter = rateLimit({
